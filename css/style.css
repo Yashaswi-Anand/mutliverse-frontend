@@ -1,56 +1,74 @@
 /* ============================================================
    Multiverse — shared stylesheet
-   One file for every page. There is no build step (Hostinger
-   deploys by git pull, nothing more), so everything here is
-   plain CSS that a browser can use as-is.
+
+   Deliberately built to match the Android app rather than to be
+   a generic marketing site: the same near-black surfaces, the
+   same periwinkle accent taken from the launcher icon, the same
+   20px glass tiles with an accent glow behind the icon chip, and
+   the same small uppercase section headers used on the app's
+   Settings screen. Someone arriving here from the app should
+   recognise it.
+
+   No build step — Hostinger deploys by git pull, nothing more.
    ============================================================ */
 
-/* ---------- tokens ---------- */
+/* ---------- tokens ----------
+   Dark first, because the app is. Light mode is a full override
+   below rather than an afterthought, since the app supports it. */
 
 :root {
-  --accent: #5b6cff;
-  --accent-soft: #eceeff;
-  --accent-ink: #2a35a8;
+  /* Pulled from the launcher icon: violet on one end, blue on the other,
+     with the cube's periwinkle as the interface accent. */
+  --violet: #6a3fd6;
+  --blue: #2f6ae0;
+  --accent: #8b98ff;
+  --accent-2: #b9a2ff;
+  --accent-ink: #0d1030;
+  --accent-wash: rgba(139, 152, 255, .13);
+  --accent-line: rgba(139, 152, 255, .26);
 
-  --bg: #ffffff;
-  --bg-alt: #f6f7fb;
-  --surface: #ffffff;
-  --border: #e3e5ec;
+  --bg: #0b0c10;
+  --bg-alt: #101218;
+  --surface: #16181f;
+  --surface-hi: #1c1f28;
+  --border: #262a34;
 
-  --ink: #16181d;
-  --ink-soft: #5a606e;
-  --ink-faint: #878d9c;
+  --ink: #e9eaee;
+  --ink-soft: #a2a8b6;
+  --ink-faint: #767d8c;
 
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 1px 2px rgba(16, 18, 28, .04), 0 8px 24px rgba(16, 18, 28, .06);
-  --maxw: 940px;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 2px 6px rgba(0, 0, 0, .35), 0 14px 40px rgba(0, 0, 0, .32);
+  --maxw: 1000px;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --accent: #8b98ff;
-    --accent-soft: #1b1f36;
-    --accent-ink: #c3cbff;
+    --accent: #4b57cf;
+    --accent-2: #7a5fe0;
+    --accent-ink: #ffffff;
+    --accent-wash: rgba(75, 87, 207, .09);
+    --accent-line: rgba(75, 87, 207, .20);
 
-    --bg: #0e0f13;
-    --bg-alt: #14161c;
-    --surface: #16181f;
-    --border: #262a34;
+    --bg: #ffffff;
+    --bg-alt: #f5f6fb;
+    --surface: #ffffff;
+    --surface-hi: #ffffff;
+    --border: #e4e6ef;
 
-    --ink: #e9eaee;
-    --ink-soft: #a2a8b6;
-    --ink-faint: #767d8c;
+    --ink: #14161c;
+    --ink-soft: #5a6070;
+    --ink-faint: #878da0;
 
-    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 28px rgba(0, 0, 0, .35);
+    --shadow: 0 1px 2px rgba(16, 18, 28, .05), 0 10px 30px rgba(16, 18, 28, .07);
   }
 }
 
 /* ---------- base ---------- */
 
 *, *::before, *::after { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
@@ -63,289 +81,298 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.wrap {
-  width: 100%;
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 22px;
-}
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-h1, h2, h3 { line-height: 1.25; letter-spacing: -0.02em; margin: 0 0 .5em; }
-h1 { font-size: clamp(2rem, 5vw, 2.9rem); font-weight: 700; }
-h2 { font-size: clamp(1.4rem, 3vw, 1.75rem); font-weight: 650; margin-top: 2.4em; }
-h3 { font-size: 1.1rem; font-weight: 620; margin-top: 1.8em; }
+h1, h2, h3 { line-height: 1.22; letter-spacing: -0.022em; margin: 0 0 .5em; }
+h1 { font-size: clamp(2.1rem, 6vw, 3.2rem); font-weight: 700; }
+h2 { font-size: clamp(1.45rem, 3.2vw, 1.9rem); font-weight: 650; }
+h3 { font-size: 1.06rem; font-weight: 620; }
 
 p { margin: 0 0 1.1em; }
 ul, ol { padding-left: 1.35em; }
-li { margin: .45em 0; }
+li { margin: .5em 0; }
 
 code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: .88em;
+  font-size: .87em;
   background: var(--bg-alt);
   border: 1px solid var(--border);
-  border-radius: 5px;
+  border-radius: 6px;
   padding: 1px 6px;
 }
 
-/* Skip link — keyboard users should not have to tab the whole nav. */
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
 .skip {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  background: var(--accent);
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 0 0 var(--radius-sm) 0;
-  z-index: 100;
+  position: absolute; left: -9999px; top: 0;
+  background: var(--accent); color: var(--accent-ink);
+  padding: 10px 18px; border-radius: 0 0 var(--radius-sm) 0; z-index: 100;
+  font-weight: 600;
 }
 .skip:focus { left: 0; }
 
 /* ---------- header ---------- */
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(170%) blur(14px);
+  -webkit-backdrop-filter: saturate(170%) blur(14px);
   border-bottom: 1px solid var(--border);
 }
 
 .site-header .wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; min-height: 66px;
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 680;
-  font-size: 1.05rem;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+  display: inline-flex; align-items: center; gap: 11px;
+  font-weight: 660; font-size: 1.06rem; color: var(--ink);
+  letter-spacing: -0.015em;
 }
 .brand:hover { text-decoration: none; }
 
-.brand-mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: linear-gradient(140deg, var(--accent), var(--accent-ink));
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  flex: none;
+/* The real launcher icon, not a lookalike. Squircle clip matches how the
+   app renders app icons in the clone list. */
+.brand img {
+  width: 30px; height: 30px; border-radius: 9px; display: block; flex: none;
+  box-shadow: 0 0 0 1px var(--border), 0 3px 10px rgba(0, 0, 0, .3);
 }
 
-.nav { display: flex; align-items: center; gap: 4px; }
-
+.nav { display: flex; align-items: center; gap: 3px; }
 .nav a {
-  color: var(--ink-soft);
-  font-size: .95rem;
-  padding: 7px 12px;
-  border-radius: 9px;
+  color: var(--ink-soft); font-size: .95rem; font-weight: 500;
+  padding: 8px 13px; border-radius: 10px;
 }
 .nav a:hover { color: var(--ink); background: var(--bg-alt); text-decoration: none; }
-.nav a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+.nav a[aria-current="page"] { color: var(--accent); background: var(--accent-wash); }
 
 .nav-toggle {
-  display: none;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 7px 10px;
-  color: var(--ink);
-  font-size: 1rem;
-  cursor: pointer;
+  display: none; background: none; border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 11px; color: var(--ink);
+  font-size: 1rem; cursor: pointer; line-height: 1;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 660px) {
   .nav-toggle { display: block; }
   .nav {
-    display: none;
-    position: absolute;
-    top: 62px;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 2px;
-    padding: 10px 16px 16px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
+    display: none; position: absolute; top: 66px; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 2px;
+    padding: 10px 16px 18px;
+    background: var(--bg); border-bottom: 1px solid var(--border);
   }
   .nav.open { display: flex; }
-  .nav a { padding: 11px 12px; }
+  .nav a { padding: 12px 13px; }
 }
 
 /* ---------- hero ---------- */
 
-.hero {
-  padding: 74px 0 60px;
-  background:
-    radial-gradient(900px 420px at 50% -80px,
-      color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
-  text-align: center;
+.hero { position: relative; padding: 78px 0 66px; text-align: center; overflow: hidden; }
+
+/* Same accent bloom the app puts behind the lock badge on its PIN screen. */
+.hero::before {
+  content: "";
+  position: absolute; inset: -20% 0 auto 50%;
+  transform: translateX(-50%);
+  width: min(900px, 130%); height: 620px;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--violet) 34%, transparent),
+    transparent 72%);
+  opacity: .55; pointer-events: none;
+}
+.hero > .wrap { position: relative; }
+
+.hero-icon {
+  width: 96px; height: 96px; border-radius: 26px; display: block;
+  margin: 0 auto 26px;
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 0 60px color-mix(in srgb, var(--accent) 40%, transparent),
+    0 18px 40px rgba(0, 0, 0, .45);
 }
 
-.hero p.lead {
-  font-size: 1.15rem;
-  color: var(--ink-soft);
-  max-width: 620px;
-  margin: 0 auto 1.8em;
+.hero .lead {
+  font-size: 1.16rem; color: var(--ink-soft);
+  max-width: 610px; margin: 0 auto 2em;
 }
 
 .eyebrow {
-  display: inline-block;
-  font-size: .8rem;
-  font-weight: 620;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-radius: 999px;
-  padding: 5px 13px;
-  margin-bottom: 18px;
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: .76rem; font-weight: 660; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--accent);
+  background: var(--accent-wash); border: 1px solid var(--accent-line);
+  border-radius: 999px; padding: 6px 14px; margin-bottom: 20px;
 }
 
 .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: .98rem;
-  font-weight: 600;
-  padding: 12px 22px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .98rem; font-weight: 600; padding: 13px 24px;
+  border-radius: 13px; border: 1px solid transparent; cursor: pointer;
+  transition: transform .12s ease, filter .12s ease, background .12s ease;
 }
-.btn:hover { text-decoration: none; }
+.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
 
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { filter: brightness(1.07); }
-
-.btn-ghost {
-  background: var(--surface);
-  color: var(--ink);
-  border-color: var(--border);
+.btn-primary {
+  background: linear-gradient(135deg, var(--violet), var(--blue));
+  color: #fff;
+  box-shadow: 0 6px 22px color-mix(in srgb, var(--violet) 45%, transparent);
 }
-.btn-ghost:hover { background: var(--bg-alt); }
+.btn-primary:hover { filter: brightness(1.1); }
 
-/* ---------- sections & cards ---------- */
+.btn-ghost { background: var(--surface); color: var(--ink); border-color: var(--border); }
+.btn-ghost:hover { background: var(--surface-hi); }
 
-section { padding: 8px 0; }
+/* ---------- section headers ----------
+   The app labels each Settings group with a small uppercase accent
+   heading next to an icon. Reused here so the two feel related. */
+
+.section-label {
+  display: flex; align-items: center; gap: 9px;
+  font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: 12px;
+}
+.section-label svg { width: 17px; height: 17px; flex: none; }
+
+section { padding: 54px 0; }
+section h2 { margin-top: 0; }
 
 .section-alt { background: var(--bg-alt); border-block: 1px solid var(--border); }
-.section-alt .wrap { padding-block: 52px; }
-.section-alt h2 { margin-top: 0; }
+
+/* ---------- tiles ----------
+   Modelled on the app's clone cards: 20px radius, a faint top-lit
+   gradient, a hairline border, and an accent glow that lifts on hover. */
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  margin-top: 26px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 16px; margin-top: 28px;
 }
 
-.card {
-  background: var(--surface);
+.tile {
+  position: relative; overflow: hidden;
+  background:
+    linear-gradient(160deg,
+      color-mix(in srgb, var(--accent) 7%, var(--surface)) 0%,
+      var(--surface) 55%);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 22px;
+  padding: 24px 22px;
   box-shadow: var(--shadow);
+  transition: transform .16s ease, border-color .16s ease;
 }
-.card h3 { margin: 0 0 6px; font-size: 1.03rem; }
-.card p { margin: 0; color: var(--ink-soft); font-size: .96rem; }
+.tile:hover { transform: translateY(-2px); border-color: var(--accent-line); }
 
-.card-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  display: grid;
-  place-items: center;
-  font-size: 19px;
-  margin-bottom: 14px;
+/* Soft bloom behind the icon chip — the same treatment the clone cards
+   use to tint each card with its app's colour. */
+.tile::before {
+  content: "";
+  position: absolute; top: -60px; left: -50px;
+  width: 190px; height: 190px; border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%);
+  pointer-events: none;
 }
+
+.tile > * { position: relative; }
+
+.tile-icon {
+  width: 42px; height: 42px; border-radius: 13px;
+  background: var(--accent-wash); border: 1px solid var(--accent-line);
+  color: var(--accent);
+  display: grid; place-items: center; margin-bottom: 15px;
+}
+.tile-icon svg { width: 21px; height: 21px; }
+
+.tile h3 { margin: 0 0 6px; }
+.tile p { margin: 0; color: var(--ink-soft); font-size: .96rem; }
+
+/* ---------- notes list ---------- */
+
+.notes { margin-top: 24px; display: grid; gap: 12px; }
+
+.note {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 16px 18px;
+}
+.note .dot {
+  width: 8px; height: 8px; border-radius: 50%; flex: none; margin-top: 9px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-wash);
+}
+.note p { margin: 0; font-size: .97rem; color: var(--ink-soft); }
+.note strong { color: var(--ink); font-weight: 620; }
 
 /* ---------- long-form pages ---------- */
 
-.doc { padding: 46px 0 90px; }
-.doc h1 { margin-bottom: 6px; }
+.doc { padding: 48px 0 90px; }
+.doc h1 { font-size: clamp(1.9rem, 4.5vw, 2.5rem); margin-bottom: 8px; }
+.doc h2 {
+  font-size: 1.22rem; margin-top: 2.4em;
+  padding-top: 1.1em; border-top: 1px solid var(--border);
+}
+.doc h2:first-of-type { border-top: none; padding-top: 0; }
 
 .doc-meta {
-  color: var(--ink-faint);
-  font-size: .95rem;
-  margin-bottom: 2.2em;
-  padding-bottom: 1.4em;
-  border-bottom: 1px solid var(--border);
+  color: var(--ink-faint); font-size: .95rem;
+  margin-bottom: 2em; padding-bottom: 1.4em; border-bottom: 1px solid var(--border);
 }
 
 .callout {
-  background: var(--accent-soft);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  padding: 16px 20px;
-  margin: 1.6em 0;
+  background: var(--accent-wash);
+  border: 1px solid var(--accent-line);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  padding: 17px 20px; margin: 1.7em 0;
 }
 .callout p:last-child { margin-bottom: 0; }
 
-/* Tables carry the "what we collect" detail, and they are the thing most
-   likely to overflow on a phone — so they scroll inside their own box rather
-   than pushing the page sideways. */
-.table-scroll { overflow-x: auto; margin: 1.3em 0; }
+/* The "what we collect" tables are the widest thing on these pages, so they
+   scroll inside their own box rather than pushing the page sideways. */
+.table-scroll {
+  overflow-x: auto; margin: 1.4em 0;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+}
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 460px;
-  font-size: .95rem;
-}
-th, td {
-  text-align: left;
-  padding: 11px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-th {
-  background: var(--bg-alt);
-  font-weight: 620;
-  font-size: .88rem;
-  letter-spacing: .01em;
-}
+table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: .95rem; }
+th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { background: var(--bg-alt); font-weight: 660; font-size: .87rem; letter-spacing: .015em; }
 tbody tr:last-child td { border-bottom: none; }
 
 /* ---------- footer ---------- */
 
 .site-footer {
-  border-top: 1px solid var(--border);
-  background: var(--bg-alt);
-  padding: 34px 0;
-  margin-top: 40px;
-  font-size: .93rem;
-  color: var(--ink-soft);
+  border-top: 1px solid var(--border); background: var(--bg-alt);
+  padding: 36px 0; font-size: .93rem; color: var(--ink-soft);
 }
 .site-footer .wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px 26px;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; flex-wrap: wrap; gap: 16px 28px;
+  align-items: center; justify-content: space-between;
 }
-.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-brand { display: flex; align-items: center; gap: 10px; }
+.footer-brand img { width: 22px; height: 22px; border-radius: 7px; display: block; }
+.footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
 
-@media (max-width: 520px) {
+@media (max-width: 560px) {
   .site-footer .wrap { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------- motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
 }
