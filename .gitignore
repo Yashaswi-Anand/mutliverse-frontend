@@ -1,0 +1,13 @@
+# Nothing secret belongs in this repo — Hostinger pulls it straight into the
+# web root, so anything committed here is publicly reachable.
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local preview servers
+.cache/
+*.log

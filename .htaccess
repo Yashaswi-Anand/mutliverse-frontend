@@ -1,0 +1,66 @@
+# ============================================================
+# Multiverse site — Apache / LiteSpeed config
+# Hostinger deploys this repo by `git pull`, so this file is the
+# only place server behaviour can be set. It ships with the site.
+# ============================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- 1. Force HTTPS -----------------------------------------------------
+  # Google Play rejects a privacy policy URL that is not reachable over
+  # https, and Hostinger terminates TLS upstream — so test the forwarded
+  # header as well as HTTPS, or this loops forever behind their proxy.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # --- 2. Strip .html from the address bar --------------------------------
+  # Matched against THE_REQUEST (the raw request line) rather than
+  # REQUEST_URI, so it only fires for what the browser actually asked for.
+  # Testing REQUEST_URI here would also match the internal rewrite in rule 3
+  # and put the server in a redirect loop.
+  RewriteCond %{THE_REQUEST} \s/+([^?\s]*?)\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L,NE]
+
+  # --- 3. Serve /privacy from privacy.html --------------------------------
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+?)/?$ /$1.html [L]
+</IfModule>
+
+# --- Security headers -----------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # No camera, mic or location is used anywhere on this site.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# --- Caching --------------------------------------------------------------
+# CSS and JS are cached for a week. Both are shared across every page, so
+# when either changes, rename it or append ?v=2 in the pages that load it —
+# otherwise returning visitors keep the old copy until it expires.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css              "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/svg+xml         "access plus 30 days"
+  ExpiresByType image/png             "access plus 30 days"
+  # HTML stays fresh: the privacy policy has to be able to change today.
+  ExpiresByType text/html             "access plus 0 seconds"
+</IfModule>
+
+# --- Compression ----------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain
+</IfModule>
+
+# --- Keep repository files from being served ------------------------------
+<FilesMatch "^(README\.md|\.gitignore|\.git.*)$">
+  Require all denied
+</FilesMatch>
