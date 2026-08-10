@@ -18,15 +18,19 @@ DirectoryIndex index.html
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-  # --- 2. Strip .html from the address bar --------------------------------
-  # Matched against THE_REQUEST (the raw request line) rather than
-  # REQUEST_URI, so it only fires for what the browser actually asked for.
-  # Testing REQUEST_URI here would also match the internal rewrite in rule 3
-  # and put the server in a redirect loop.
-  RewriteCond %{THE_REQUEST} \s/+([^?\s]*?)\.html[\s?] [NC]
-  RewriteRule ^ /%1 [R=301,L,NE]
-
-  # --- 3. Serve /privacy from privacy.html --------------------------------
+  # --- 2. Also serve /privacy from privacy.html ---------------------------
+  # Both forms work. Pages link to /privacy.html, which resolves on ANY
+  # server — including a plain `python -m http.server` during development,
+  # which does not read this file at all. /privacy stays available as the
+  # tidier public address, and is what rel="canonical" and the Play Console
+  # listing use.
+  #
+  # There is deliberately NO redirect from .html back to the clean form.
+  # It would add a 301 to every internal click, and matching it safely needs
+  # a THE_REQUEST condition that is by far the easiest rule here to turn
+  # into a redirect loop. Serving both costs nothing, and canonical already
+  # tells search engines which one counts.
+  RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME}.html -f
   RewriteRule ^(.+?)/?$ /$1.html [L]

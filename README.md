@@ -25,12 +25,23 @@ Nothing secret goes in this repository.
 
 ```
 index.html      landing page
-privacy.html    privacy policy   → /privacy
-terms.html      terms of use     → /terms
+privacy.html    privacy policy   also reachable at /privacy
+terms.html      terms of use     also reachable at /terms
 css/style.css   shared styles, light + dark
 js/main.js      footer year, mobile nav, current-page highlight
 .htaccess       https redirect, clean URLs, security headers, caching
 ```
+
+### Two URL forms, on purpose
+
+Pages link to each other as `/privacy.html`, because that resolves on **any**
+server — including the local one below, which does not read `.htaccess`. Linking
+to `/privacy` meant the site's own navigation returned 404 during development.
+
+On the live host `.htaccess` also serves `/privacy` and `/terms` without the
+extension. That is the tidier public address, and it is what `rel="canonical"`
+and the Play Console listing use. Nothing redirects between the two — both just
+work.
 
 No build step. No dependencies. Plain HTML, CSS and JS, because Hostinger's git
 deployment only pulls — it does not run npm.
