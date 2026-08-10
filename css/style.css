@@ -1,23 +1,33 @@
 /* ============================================================
    Multiverse — shared stylesheet
 
-   Deliberately built to match the Android app rather than to be
-   a generic marketing site: the same near-black surfaces, the
-   same periwinkle accent taken from the launcher icon, the same
-   20px glass tiles with an accent glow behind the icon chip, and
-   the same small uppercase section headers used on the app's
-   Settings screen. Someone arriving here from the app should
-   recognise it.
+   Built to match the Android app rather than to be a generic
+   marketing site: the same near-black surfaces, the same
+   periwinkle accent taken from the launcher icon, the same 20px
+   glass tiles with an accent bloom behind the icon chip, and the
+   same small uppercase section labels used on the app's Settings
+   screen.
 
    No build step — Hostinger deploys by git pull, nothing more.
    ============================================================ */
 
-/* ---------- tokens ----------
-   Dark first, because the app is. Light mode is a full override
-   below rather than an afterthought, since the app supports it. */
+/* ---------- theme tokens ----------
+
+   Three ways a theme gets chosen, in priority order:
+     1. data-theme on <html>, set by the header toggle (localStorage)
+     2. the OS preference, when the visitor has not chosen
+     3. dark, as the default — the app is dark-first
+
+   The light block is written out twice on purpose. light-dark() would
+   remove the duplication, but these pages include the privacy policy a
+   Play reviewer has to be able to read, and plain custom properties work
+   in every browser. Reliability beats brevity here.
+   ------------------------------------------------------------------- */
 
 :root {
-  /* Pulled from the launcher icon: violet on one end, blue on the other,
+  color-scheme: dark;
+
+  /* Straight off the launcher icon: violet at one end, blue at the other,
      with the cube's periwinkle as the interface accent. */
   --violet: #6a3fd6;
   --blue: #2f6ae0;
@@ -28,10 +38,15 @@
   --accent-line: rgba(139, 152, 255, .26);
 
   --bg: #0b0c10;
-  --bg-alt: #101218;
+  --bg-alt: #0e1016;
   --surface: #16181f;
   --surface-hi: #1c1f28;
   --border: #262a34;
+
+  /* Glass: a translucent pane plus a blur of whatever sits behind it. */
+  --glass: rgba(30, 33, 43, .58);
+  --glass-edge: rgba(255, 255, 255, .07);
+  --glass-shine: rgba(255, 255, 255, .05);
 
   --ink: #e9eaee;
   --ink-soft: #a2a8b6;
@@ -41,28 +56,76 @@
   --radius-sm: 12px;
   --shadow: 0 2px 6px rgba(0, 0, 0, .35), 0 14px 40px rgba(0, 0, 0, .32);
   --maxw: 1000px;
+
+  --ambient-1: rgba(106, 63, 214, .30);
+  --ambient-2: rgba(47, 106, 224, .24);
 }
 
+/* Light — applied when the OS asks for it and the visitor has not
+   overridden it with the toggle. */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
     --accent: #4b57cf;
     --accent-2: #7a5fe0;
     --accent-ink: #ffffff;
     --accent-wash: rgba(75, 87, 207, .09);
     --accent-line: rgba(75, 87, 207, .20);
 
-    --bg: #ffffff;
-    --bg-alt: #f5f6fb;
+    --bg: #fbfbfe;
+    --bg-alt: #f4f5fb;
     --surface: #ffffff;
     --surface-hi: #ffffff;
-    --border: #e4e6ef;
+    --border: #e3e5f0;
+
+    --glass: rgba(255, 255, 255, .66);
+    /* A dark hairline, not a white one. On a light page a white edge sits on
+       an almost-white card and the tile loses its outline completely — the
+       glass reads as a flat patch. Dark mode gets the opposite treatment. */
+    --glass-edge: rgba(22, 25, 48, .10);
+    --glass-shine: rgba(255, 255, 255, .9);
 
     --ink: #14161c;
-    --ink-soft: #5a6070;
-    --ink-faint: #878da0;
+    --ink-soft: #565c6c;
+    --ink-faint: #838a9c;
 
-    --shadow: 0 1px 2px rgba(16, 18, 28, .05), 0 10px 30px rgba(16, 18, 28, .07);
+    --shadow: 0 1px 2px rgba(16, 18, 28, .04), 0 12px 34px rgba(30, 34, 80, .09);
+
+    --ambient-1: rgba(106, 63, 214, .16);
+    --ambient-2: rgba(47, 106, 224, .14);
   }
+}
+
+/* Light — chosen explicitly with the toggle. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --accent: #4b57cf;
+  --accent-2: #7a5fe0;
+  --accent-ink: #ffffff;
+  --accent-wash: rgba(75, 87, 207, .09);
+  --accent-line: rgba(75, 87, 207, .20);
+
+  --bg: #fbfbfe;
+  --bg-alt: #f4f5fb;
+  --surface: #ffffff;
+  --surface-hi: #ffffff;
+  --border: #e3e5f0;
+
+  --glass: rgba(255, 255, 255, .66);
+  /* Dark hairline — see the note in the media-query block above. */
+  --glass-edge: rgba(22, 25, 48, .10);
+  --glass-shine: rgba(255, 255, 255, .9);
+
+  --ink: #14161c;
+  --ink-soft: #565c6c;
+  --ink-faint: #838a9c;
+
+  --shadow: 0 1px 2px rgba(16, 18, 28, .04), 0 12px 34px rgba(30, 34, 80, .09);
+
+  --ambient-1: rgba(106, 63, 214, .16);
+  --ambient-2: rgba(47, 106, 224, .14);
 }
 
 /* ---------- base ---------- */
@@ -81,13 +144,26 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Ambient colour behind everything.
+   Glass only reads as glass when there is something to see through it — over
+   a flat fill, a backdrop blur does nothing at all. These two soft blooms are
+   what the tiles blur. Fixed, so they stay put while the page scrolls. */
+body::before {
+  content: "";
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(48rem 32rem at 12% -8%, var(--ambient-1), transparent 60%),
+    radial-gradient(42rem 30rem at 92% 8%, var(--ambient-2), transparent 62%),
+    radial-gradient(40rem 28rem at 60% 108%, var(--ambient-1), transparent 62%);
+}
+
 .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
 
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 h1, h2, h3 { line-height: 1.22; letter-spacing: -0.022em; margin: 0 0 .5em; }
-h1 { font-size: clamp(2.1rem, 6vw, 3.2rem); font-weight: 700; }
+h1 { font-size: clamp(2rem, 5.6vw, 3.1rem); font-weight: 700; }
 h2 { font-size: clamp(1.45rem, 3.2vw, 1.9rem); font-weight: 650; }
 h3 { font-size: 1.06rem; font-weight: 620; }
 
@@ -106,11 +182,7 @@ code {
 
 ::selection { background: var(--accent); color: var(--accent-ink); }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 6px;
-}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
 .skip {
   position: absolute; left: -9999px; top: 0;
@@ -124,73 +196,84 @@ code {
 
 .site-header {
   position: sticky; top: 0; z-index: 50;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: saturate(170%) blur(14px);
-  -webkit-backdrop-filter: saturate(170%) blur(14px);
+  background: color-mix(in srgb, var(--bg) 74%, transparent);
+  backdrop-filter: saturate(170%) blur(16px);
+  -webkit-backdrop-filter: saturate(170%) blur(16px);
   border-bottom: 1px solid var(--border);
 }
 
 .site-header .wrap {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 16px; min-height: 66px;
+  display: flex; align-items: center; gap: 14px; min-height: 66px;
 }
 
 .brand {
   display: inline-flex; align-items: center; gap: 11px;
   font-weight: 660; font-size: 1.06rem; color: var(--ink);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.015em; margin-right: auto;
 }
 .brand:hover { text-decoration: none; }
 
-/* The real launcher icon, not a lookalike. Squircle clip matches how the
-   app renders app icons in the clone list. */
+/* The real launcher icon, not a lookalike. */
 .brand img {
   width: 30px; height: 30px; border-radius: 9px; display: block; flex: none;
   box-shadow: 0 0 0 1px var(--border), 0 3px 10px rgba(0, 0, 0, .3);
+  transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
+.brand:hover img { transform: rotate(-8deg) scale(1.08); }
 
 .nav { display: flex; align-items: center; gap: 3px; }
 .nav a {
   color: var(--ink-soft); font-size: .95rem; font-weight: 500;
   padding: 8px 13px; border-radius: 10px;
+  transition: color .15s ease, background .15s ease;
 }
 .nav a:hover { color: var(--ink); background: var(--bg-alt); text-decoration: none; }
 .nav a[aria-current="page"] { color: var(--accent); background: var(--accent-wash); }
 
-.nav-toggle {
-  display: none; background: none; border: 1px solid var(--border);
-  border-radius: 10px; padding: 8px 11px; color: var(--ink);
-  font-size: 1rem; cursor: pointer; line-height: 1;
+.icon-btn {
+  display: grid; place-items: center;
+  width: 38px; height: 38px; flex: none;
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); border-radius: 11px;
+  cursor: pointer; padding: 0;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.icon-btn:hover { background: var(--surface-hi); border-color: var(--accent-line); }
+.icon-btn:active { transform: scale(.94); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+/* Only one of the two glyphs shows, depending on the resolved theme. */
+.icon-btn .i-sun { display: none; }
+.icon-btn .i-moon { display: block; }
+:root[data-theme="light"] .icon-btn .i-sun { display: block; }
+:root[data-theme="light"] .icon-btn .i-moon { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .icon-btn .i-sun { display: block; }
+  :root:not([data-theme="dark"]) .icon-btn .i-moon { display: none; }
 }
 
-@media (max-width: 660px) {
-  .nav-toggle { display: block; }
+.nav-toggle { display: none; }
+
+@media (max-width: 700px) {
+  .nav-toggle { display: grid; }
   .nav {
     display: none; position: absolute; top: 66px; left: 0; right: 0;
     flex-direction: column; align-items: stretch; gap: 2px;
     padding: 10px 16px 18px;
     background: var(--bg); border-bottom: 1px solid var(--border);
   }
-  .nav.open { display: flex; }
+  .nav.open { display: flex; animation: drop .22s ease both; }
   .nav a { padding: 12px 13px; }
+}
+
+@keyframes drop {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
 }
 
 /* ---------- hero ---------- */
 
-.hero { position: relative; padding: 78px 0 66px; text-align: center; overflow: hidden; }
-
-/* Same accent bloom the app puts behind the lock badge on its PIN screen. */
-.hero::before {
-  content: "";
-  position: absolute; inset: -20% 0 auto 50%;
-  transform: translateX(-50%);
-  width: min(900px, 130%); height: 620px;
-  background: radial-gradient(closest-side,
-    color-mix(in srgb, var(--violet) 34%, transparent),
-    transparent 72%);
-  opacity: .55; pointer-events: none;
-}
-.hero > .wrap { position: relative; }
+.hero { position: relative; padding: 80px 0 68px; text-align: center; }
 
 .hero-icon {
   width: 96px; height: 96px; border-radius: 26px; display: block;
@@ -198,12 +281,19 @@ code {
   box-shadow:
     0 0 0 1px var(--border),
     0 0 60px color-mix(in srgb, var(--accent) 40%, transparent),
-    0 18px 40px rgba(0, 0, 0, .45);
+    0 18px 40px rgba(0, 0, 0, .35);
+  animation: float 6s ease-in-out infinite;
+}
+
+/* A slow drift, not a bounce — it should read as "alive", not "look at me". */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-9px) rotate(-1.5deg); }
 }
 
 .hero .lead {
   font-size: 1.16rem; color: var(--ink-soft);
-  max-width: 610px; margin: 0 auto 2em;
+  max-width: 620px; margin: 0 auto 2em;
 }
 
 .eyebrow {
@@ -214,30 +304,40 @@ code {
   border-radius: 999px; padding: 6px 14px; margin-bottom: 20px;
 }
 
+.grad {
+  background: linear-gradient(100deg, var(--accent-2), var(--accent) 45%, var(--blue));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+
 .btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: .98rem; font-weight: 600; padding: 13px 24px;
   border-radius: 13px; border: 1px solid transparent; cursor: pointer;
-  transition: transform .12s ease, filter .12s ease, background .12s ease;
+  transition: transform .14s ease, filter .14s ease, background .14s ease,
+              box-shadow .14s ease;
 }
-.btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:hover { text-decoration: none; transform: translateY(-2px); }
 .btn:active { transform: translateY(0); }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--violet), var(--blue));
   color: #fff;
-  box-shadow: 0 6px 22px color-mix(in srgb, var(--violet) 45%, transparent);
+  box-shadow: 0 6px 22px color-mix(in srgb, var(--violet) 42%, transparent);
 }
-.btn-primary:hover { filter: brightness(1.1); }
+.btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--violet) 52%, transparent);
+}
 
-.btn-ghost { background: var(--surface); color: var(--ink); border-color: var(--border); }
+.btn-ghost { background: var(--glass); color: var(--ink); border-color: var(--glass-edge); backdrop-filter: blur(10px); }
 .btn-ghost:hover { background: var(--surface-hi); }
 
-/* ---------- section headers ----------
-   The app labels each Settings group with a small uppercase accent
-   heading next to an icon. Reused here so the two feel related. */
+/* ---------- section labels ----------
+   The app labels each Settings group with a small uppercase accent heading
+   beside an icon. Reused here so the two read as one product. */
 
 .section-label {
   display: flex; align-items: center; gap: 9px;
@@ -247,14 +347,18 @@ code {
 }
 .section-label svg { width: 17px; height: 17px; flex: none; }
 
-section { padding: 54px 0; }
+section { padding: 56px 0; }
 section h2 { margin-top: 0; }
 
-.section-alt { background: var(--bg-alt); border-block: 1px solid var(--border); }
+.section-alt {
+  background: color-mix(in srgb, var(--bg-alt) 78%, transparent);
+  border-block: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+}
 
-/* ---------- tiles ----------
-   Modelled on the app's clone cards: 20px radius, a faint top-lit
-   gradient, a hairline border, and an accent glow that lifts on hover. */
+/* ---------- glass tiles ----------
+   Modelled on the app's clone cards: 20px radius, a translucent pane over the
+   ambient wash, a hairline edge, and an accent bloom behind the icon chip. */
 
 .grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
@@ -263,20 +367,31 @@ section h2 { margin-top: 0; }
 
 .tile {
   position: relative; overflow: hidden;
-  background:
-    linear-gradient(160deg,
-      color-mix(in srgb, var(--accent) 7%, var(--surface)) 0%,
-      var(--surface) 55%);
-  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid var(--glass-edge);
   border-radius: var(--radius);
   padding: 24px 22px;
   box-shadow: var(--shadow);
-  transition: transform .16s ease, border-color .16s ease;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
-.tile:hover { transform: translateY(-2px); border-color: var(--accent-line); }
+.tile:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-line);
+  box-shadow: var(--shadow), 0 0 34px color-mix(in srgb, var(--accent) 22%, transparent);
+}
 
-/* Soft bloom behind the icon chip — the same treatment the clone cards
-   use to tint each card with its app's colour. */
+/* The lit top edge that sells the "pane of glass" read. */
+.tile::after {
+  content: "";
+  position: absolute; inset: 0 0 auto; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-shine) 45%, transparent);
+  pointer-events: none;
+}
+
+/* Accent bloom behind the icon chip — the same treatment the clone cards use
+   to tint each card with its own app's colour. */
 .tile::before {
   content: "";
   position: absolute; top: -60px; left: -50px;
@@ -284,37 +399,58 @@ section h2 { margin-top: 0; }
   background: radial-gradient(closest-side,
     color-mix(in srgb, var(--accent) 26%, transparent), transparent 70%);
   pointer-events: none;
+  transition: opacity .2s ease;
+  opacity: .85;
 }
+.tile:hover::before { opacity: 1; }
 
-.tile > * { position: relative; }
+.tile > * { position: relative; z-index: 1; }
 
 .tile-icon {
   width: 42px; height: 42px; border-radius: 13px;
   background: var(--accent-wash); border: 1px solid var(--accent-line);
   color: var(--accent);
   display: grid; place-items: center; margin-bottom: 15px;
+  transition: transform .2s cubic-bezier(.34, 1.56, .64, 1);
 }
+.tile:hover .tile-icon { transform: scale(1.09) rotate(-5deg); }
 .tile-icon svg { width: 21px; height: 21px; }
 
 .tile h3 { margin: 0 0 6px; }
 .tile p { margin: 0; color: var(--ink-soft); font-size: .96rem; }
 
-/* ---------- notes list ---------- */
+/* ---------- notes ---------- */
 
 .notes { margin-top: 24px; display: grid; gap: 12px; }
 
 .note {
   display: flex; gap: 14px; align-items: flex-start;
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid var(--glass-edge);
   border-radius: var(--radius-sm); padding: 16px 18px;
+  transition: border-color .2s ease, transform .2s ease;
 }
+.note:hover { border-color: var(--accent-line); transform: translateX(3px); }
 .note .dot {
   width: 8px; height: 8px; border-radius: 50%; flex: none; margin-top: 9px;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-wash);
+  background: var(--accent); box-shadow: 0 0 0 4px var(--accent-wash);
 }
 .note p { margin: 0; font-size: .97rem; color: var(--ink-soft); }
 .note strong { color: var(--ink); font-weight: 620; }
+
+/* ---------- scroll reveal ----------
+   Elements start slightly low and transparent, and are revealed by an
+   IntersectionObserver adding .in. If JS never runs, .reveal is never applied
+   by the script either — see main.js — so content is visible regardless. */
+
+.reveal { opacity: 0; transform: translateY(18px); }
+.reveal.in {
+  opacity: 1; transform: none;
+  transition: opacity .55s ease, transform .55s cubic-bezier(.22, .68, .36, 1);
+  transition-delay: var(--d, 0ms);
+}
 
 /* ---------- long-form pages ---------- */
 
@@ -333,8 +469,7 @@ section h2 { margin-top: 0; }
 
 .callout {
   background: var(--accent-wash);
-  border: 1px solid var(--accent-line);
-  border-left-width: 3px;
+  border: 1px solid var(--accent-line); border-left-width: 3px;
   border-radius: var(--radius-sm);
   padding: 17px 20px; margin: 1.7em 0;
 }
@@ -345,17 +480,22 @@ section h2 { margin-top: 0; }
 .table-scroll {
   overflow-x: auto; margin: 1.4em 0;
   border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: .95rem; }
 th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--border); vertical-align: top; }
-th { background: var(--bg-alt); font-weight: 660; font-size: .87rem; letter-spacing: .015em; }
+th { background: color-mix(in srgb, var(--bg-alt) 75%, transparent); font-weight: 660; font-size: .87rem; }
 tbody tr:last-child td { border-bottom: none; }
 
 /* ---------- footer ---------- */
 
 .site-footer {
-  border-top: 1px solid var(--border); background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-alt) 80%, transparent);
+  backdrop-filter: blur(8px);
   padding: 36px 0; font-size: .93rem; color: var(--ink-soft);
 }
 .site-footer .wrap {
@@ -370,9 +510,17 @@ tbody tr:last-child td { border-bottom: none; }
   .site-footer .wrap { flex-direction: column; align-items: flex-start; }
 }
 
-/* ---------- motion ---------- */
+/* ---------- motion ----------
+   Everything decorative stops for anyone who has asked it to. The reveal
+   elements are forced visible, or they would stay at opacity 0 forever. */
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  * { transition: none !important; animation: none !important; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .hero-icon { animation: none; }
 }
