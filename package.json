@@ -5,7 +5,8 @@
   "description": "Website for the Multiverse Android app — landing page, privacy policy and terms.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "//build": "--webpack is required, not a preference. Next 16 builds with Turbopack by default, and Turbopack only works with native SWC bindings. Hostinger's build container ships glibc older than 2.29, so @next/swc-linux-x64-gnu cannot load there and Next falls back to WASM — which Turbopack refuses, failing the build. Webpack works with the WASM bindings. Slower, but one script that builds everywhere.",
+    "build": "next build --webpack",
     "start": "npx serve out",
     "lint": "next lint"
   },
