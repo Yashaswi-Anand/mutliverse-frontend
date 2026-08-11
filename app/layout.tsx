@@ -46,7 +46,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    /*
+      suppressHydrationWarning is required here, and only here.
+
+      The script below sets data-theme on <html> before React hydrates, so the
+      server's markup (no attribute) and the live DOM (data-theme="dark") differ
+      by design. React reports that as a hydration mismatch. The alternative —
+      rendering the theme on the server — is impossible for a static export:
+      the HTML is built once, long before anyone's preference is known.
+
+      It applies to this element only, not to the tree below it, so a genuine
+      mismatch anywhere in the app is still reported.
+    */
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
