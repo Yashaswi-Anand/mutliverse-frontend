@@ -516,6 +516,31 @@ tbody tr:last-child td { border-bottom: none; }
   .site-footer .wrap { flex-direction: column; align-items: flex-start; }
 }
 
+/* ---------- embedded mode ----------
+   Set by the inline script in the layout when the URL carries ?app=1, which is
+   how the Android app links to these pages.
+
+   Inside the app's Custom Tab the reader wants the document and nothing else.
+   A nav bar there is not just noise — it is an invitation to wander off into
+   the marketing site from what is supposed to be a legal page, with no obvious
+   way back. The document keeps its own internal links, so Privacy and Terms
+   can still reach each other.
+
+   Only the site chrome is hidden. Nothing about the policy text changes,
+   because the URL a reviewer opens and the one the app opens must show the
+   same document. */
+
+.embedded .site-header,
+.embedded .site-footer {
+  display: none;
+}
+
+/* The header is sticky and reserves space at the top; without it the document
+   would otherwise start hard against the Custom Tab's own toolbar. */
+.embedded .doc {
+  padding-top: 30px;
+}
+
 /* ---------- motion ----------
    Everything decorative stops for anyone who has asked it to. The reveal
    elements are forced visible, or they would stay at opacity 0 forever. */

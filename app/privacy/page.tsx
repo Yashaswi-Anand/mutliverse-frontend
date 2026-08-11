@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -264,7 +263,7 @@ export default function Privacy() {
         </p>
 
         <p>
-          See also the <Link href="/terms/">Terms of Use</Link>.
+          See also the <a href="/terms/">Terms of Use</a>.
         </p>
       </div>
     </div>

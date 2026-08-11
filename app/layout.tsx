@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import ScrollReveal from '@/components/ScrollReveal';
+import EmbedLinks from '@/components/EmbedLinks';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -40,6 +41,21 @@ export const viewport = {
 */
 const themeScript = `try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}`;
 
+/*
+  Embedded mode: ?app=1 strips the site chrome.
+
+  The Android app opens the policy and terms in a Custom Tab, and a reader who
+  arrived there wants the document — not a nav bar offering to take them to the
+  marketing page. The link the app sends carries ?app=1, and this hides the
+  header and footer.
+
+  Read here rather than with useSearchParams because the site is a static
+  export: every visitor gets the same prerendered HTML, so the decision has to
+  happen in the browser. Doing it before paint means the nav never flashes into
+  view and then disappears.
+*/
+const embedScript = `try{if(/[?&]app=1(&|$)/.test(location.search))document.documentElement.classList.add('embedded');}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: {
@@ -61,6 +77,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: embedScript }} />
       </head>
       <body>
         <a className="skip" href="#main">
@@ -70,6 +87,7 @@ export default function RootLayout({
         <main id="main">{children}</main>
         <SiteFooter />
         <ScrollReveal />
+        <EmbedLinks />
       </body>
     </html>
   );

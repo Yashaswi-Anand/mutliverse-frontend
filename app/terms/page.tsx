@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Terms of Use',
@@ -139,7 +138,7 @@ export default function Terms() {
         </p>
 
         <p>
-          See also the <Link href="/privacy/">Privacy Policy</Link>.
+          See also the <a href="/privacy/">Privacy Policy</a>.
         </p>
       </div>
     </div>
