@@ -8,7 +8,17 @@
    same small uppercase section labels used on the app's Settings
    screen.
 
-   No build step — Hostinger deploys by git pull, nothing more.
+   VENDOR PREFIXES: do not hand-write -webkit- versions here. Next's
+   CSS minifier adds them from browserslist, and it treats a
+   hand-written prefixed line as the SAME declaration — so it keeps
+   only whichever came last. Writing both
+
+       backdrop-filter: blur(18px) saturate(150%);
+       -webkit-backdrop-filter: blur(18px) saturate(150%);
+
+   left .tile with ONLY the -webkit- form after minification, and the
+   glass blur silently disappeared everywhere except WebKit. Write the
+   standard property once and let the build prefix it.
    ============================================================ */
 
 /* ---------- theme tokens ----------
@@ -198,7 +208,6 @@ code {
   position: sticky; top: 0; z-index: 50;
   background: color-mix(in srgb, var(--bg) 74%, transparent);
   backdrop-filter: saturate(170%) blur(16px);
-  -webkit-backdrop-filter: saturate(170%) blur(16px);
   border-bottom: 1px solid var(--border);
 }
 
@@ -369,7 +378,6 @@ section h2 { margin-top: 0; }
   position: relative; overflow: hidden;
   background: var(--glass);
   backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid var(--glass-edge);
   border-radius: var(--radius);
   padding: 24px 22px;
@@ -427,7 +435,6 @@ section h2 { margin-top: 0; }
   display: flex; gap: 14px; align-items: flex-start;
   background: var(--glass);
   backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid var(--glass-edge);
   border-radius: var(--radius-sm); padding: 16px 18px;
   transition: border-color .2s ease, transform .2s ease;
@@ -482,7 +489,6 @@ section h2 { margin-top: 0; }
   border: 1px solid var(--border); border-radius: var(--radius-sm);
   background: var(--glass);
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
 }
 
 table { border-collapse: collapse; width: 100%; min-width: 480px; font-size: .95rem; }

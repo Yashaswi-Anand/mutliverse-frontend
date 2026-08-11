@@ -1,5 +1,21 @@
-# Nothing secret belongs in this repo — Hostinger pulls it straight into the
-# web root, so anything committed here is publicly reachable.
+# Nothing secret belongs in this repo — the built output is served publicly,
+# so anything committed here is effectively public.
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env*.local
 
 # OS / editor cruft
 .DS_Store
@@ -8,6 +24,6 @@ desktop.ini
 .vscode/
 .idea/
 
-# Local preview servers
-.cache/
+# Logs
 *.log
+npm-debug.log*

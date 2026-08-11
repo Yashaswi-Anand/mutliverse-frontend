@@ -1,0 +1,53 @@
+name: Build and publish
+
+# Hostinger's Git deployment only runs `git pull` — its own documentation says
+# the feature is "incompatible with Node.js websites", and it never runs a
+# build. So the build happens here instead, and the finished static site is
+# force-pushed to a `deploy` branch that Hostinger is pointed at.
+#
+#   main    → source (Next.js)
+#   deploy  → the contents of out/, ready to serve
+#
+# Push to main, and a minute later the site is live.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  # A second push while the first is still building would otherwise race to
+  # force-push `deploy`, and the older build could land last.
+  group: publish
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Publish out/ to the deploy branch
+        run: |
+          set -e
+          cd out
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A          # -A from inside out/ picks up .htaccess too
+          git commit -q -m "Build from ${GITHUB_SHA::7}"
+          git push -f \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" \
+            HEAD:deploy
