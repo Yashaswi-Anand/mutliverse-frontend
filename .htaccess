@@ -1,0 +1,59 @@
+# ============================================================
+# Multiverse site — Apache / LiteSpeed config
+#
+# Lives in public/ so Next copies it into out/ verbatim, and the
+# deploy branch carries it to the web root. This is the only place
+# server behaviour can be set — Hostinger deploys by pulling files
+# and runs nothing.
+# ============================================================
+
+Options -Indexes
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS.
+  # Google Play rejects a privacy policy URL that is not reachable over https,
+  # and Hostinger terminates TLS upstream — so the forwarded header has to be
+  # tested as well as HTTPS, or this loops forever behind their proxy.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# NOTE: there is deliberately no clean-URL rewrite any more.
+# next.config.mjs sets trailingSlash, so the export writes
+# privacy/index.html rather than privacy.html — /privacy resolves through
+# DirectoryIndex on its own. The mod_rewrite block that used to fake it was
+# the most fragile thing in this file and is simply not needed.
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # No camera, mic or location is used anywhere on this site.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Next fingerprints everything under _next/static, so a changed file gets a
+  # new name. Those can be cached hard and forever; the old cache-busting
+  # ?v=N dance is gone with them.
+  <FilesMatch "\.(js|css|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  ExpiresByType image/png  "access plus 30 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+
+  # HTML always revalidates: the privacy policy has to be able to change today,
+  # and it is the file Play checks.
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain image/svg+xml
+</IfModule>
