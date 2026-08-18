@@ -11,9 +11,9 @@ export default function Terms() {
     <div className="doc">
       <div className="wrap">
         <h1>Terms of Use</h1>
-        {/* <p className="doc-meta">
+        <p className="doc-meta">
           Applies to the Android app <strong>Multiverse</strong>
-        </p> */}
+        </p>
 
         <p>
           By installing or using Multiverse you agree to what is set out below.

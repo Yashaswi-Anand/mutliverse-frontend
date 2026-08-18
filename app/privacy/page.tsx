@@ -12,9 +12,9 @@ export default function Privacy() {
     <div className="doc">
       <div className="wrap">
         <h1>Privacy Policy</h1>
-        {/* <p className="doc-meta">
+        <p className="doc-meta">
           Applies to the Android app <strong>Multiverse</strong>
-        </p> */}
+        </p>
 
         <p>
           Multiverse lets you run more than one copy of an app on the same phone,
