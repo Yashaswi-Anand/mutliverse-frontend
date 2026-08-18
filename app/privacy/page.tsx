@@ -12,9 +12,9 @@ export default function Privacy() {
     <div className="doc">
       <div className="wrap">
         <h1>Privacy Policy</h1>
-        <p className="doc-meta">
+        {/* <p className="doc-meta">
           Applies to the Android app <strong>Multiverse</strong>
-        </p>
+        </p> */}
 
         <p>
           Multiverse lets you run more than one copy of an app on the same phone,
@@ -266,7 +266,7 @@ export default function Privacy() {
         <p>
           Questions about this policy, or a request to delete a report you sent:
           <br />
-          <a href="mailto:anandyash1711@gmail.com">anandyash1711@gmail.com</a>
+          <a href="mailto:contact@socialriser.com">contact@socialriser.com</a>
         </p>
 
         <p>

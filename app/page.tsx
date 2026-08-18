@@ -137,7 +137,7 @@ export default function Home() {
             There is a bug report form inside the app —{' '}
             <strong>Settings → Report a bug</strong>. You can attach screenshots,
             and it sends straight to the developer. Or write to{' '}
-            <a href="mailto:anandyash1711@gmail.com">anandyash1711@gmail.com</a>.
+            <a href="mailto:contact@socialriser.com">contact@socialriser.com</a>.
           </p>
         </div>
       </section>

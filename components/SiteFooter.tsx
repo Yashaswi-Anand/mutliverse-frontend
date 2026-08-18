@@ -17,7 +17,7 @@ export default function SiteFooter() {
         <div className="footer-links">
           <Link href="/privacy/">Privacy</Link>
           <Link href="/terms/">Terms</Link>
-          <a href="mailto:anandyash1711@gmail.com">Contact</a>
+          <a href="mailto:contact@socialriser.com">Contact</a>
         </div>
       </div>
     </footer>

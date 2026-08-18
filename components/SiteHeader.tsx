@@ -63,7 +63,7 @@ export default function SiteHeader() {
               {label}
             </Link>
           ))}
-          <a href="mailto:anandyash1711@gmail.com">Contact</a>
+          <a href="mailto:contact@socialriser.com">Contact</a>
         </nav>
 
         <button
