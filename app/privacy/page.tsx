@@ -13,8 +13,6 @@ export default function Privacy() {
       <div className="wrap">
         <h1>Privacy Policy</h1>
         <p className="doc-meta">
-          Last updated: 10 August 2026
-          <br />
           Applies to the Android app <strong>Multiverse</strong>
         </p>
 
@@ -161,10 +159,6 @@ export default function Privacy() {
                 </td>
               </tr>
               <tr>
-                <td>Microphone</td>
-                <td>A cloned app, for voice notes or voice search</td>
-              </tr>
-              <tr>
                 <td>Contacts</td>
                 <td>A cloned messaging app, to find your contacts</td>
               </tr>
@@ -173,10 +167,11 @@ export default function Privacy() {
                 <td>A cloned delivery, maps or ride app</td>
               </tr>
               <tr>
-                <td>Photos and media</td>
+                <td>Photos you choose</td>
                 <td>
                   Attaching a screenshot to a bug report, and cloned apps picking
-                  images
+                  images. Android&apos;s own picker hands over only the images
+                  you select
                 </td>
               </tr>
               <tr>
@@ -193,20 +188,31 @@ export default function Privacy() {
                   Cloned apps&apos; own network use, and sending a bug report
                 </td>
               </tr>
+              <tr>
+                <td>Running in the background</td>
+                <td>
+                  Keeping your clones alive after you leave Multiverse, so a
+                  cloned messaging app can still receive messages. Android
+                  requires a visible notification while this runs, and you can
+                  switch the whole thing off in <em>Settings</em>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
 
         <p>
-          Multiverse itself does not read your contacts, does not use your camera
-          or microphone, and does not collect your location. Android still asks
-          you before any of these is granted, and you can revoke them at any time
-          in <em>Settings → Apps → Multiverse → Permissions</em>.
+          Multiverse itself does not read your contacts, does not use your
+          camera, and does not collect your location. Android still asks you
+          before any of these is granted, and you can revoke them at any time in{' '}
+          <em>Settings → Apps → Multiverse → Permissions</em>.
         </p>
 
         <p>
-          Background location is deliberately not requested. SMS and call-log
-          access are deliberately not requested.
+          <strong>Deliberately not requested at all:</strong> the microphone,
+          background location, SMS, and the call log. The microphone was removed
+          rather than kept unused — a permission that is never going to be
+          honestly usable should not sit in the install prompt.
         </p>
 
         <h2 data-reveal>4. What Multiverse does not do</h2>
@@ -249,9 +255,10 @@ export default function Privacy() {
         <h2 data-reveal>8. Changes to this policy</h2>
 
         <p>
-          If this policy changes, the date at the top of this page changes with
-          it. Material changes will also be noted in the app&apos;s release notes
-          on Google Play.
+          This page is kept in step with the app, so what you read here describes
+          the version currently on Google Play rather than a snapshot from some
+          earlier date. Material changes are also noted in the app&apos;s release
+          notes on Google Play, which is where the dated history lives.
         </p>
 
         <h2 data-reveal>9. Contact</h2>

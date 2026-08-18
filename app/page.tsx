@@ -113,11 +113,17 @@ export default function Home() {
               A few detect the sandbox and stop; others behave oddly inside it.
               If one misbehaves, tell us from <em>Settings → Report a bug</em>.
             </Note>
+            <Note title="Some apps ask not to be cloned, and we listen.">
+              An app can declare that it will not run inside a container. Those
+              apps are left out of the list, and Multiverse will not open a clone
+              of one. There is no override.
+            </Note>
             <Note title="Permissions belong to the clones, not to Multiverse.">
-              A cloned app can only use the camera, microphone or contacts if
-              Multiverse holds that permission — so Multiverse asks on the
-              clone&apos;s behalf, and never uses them itself. The{' '}
-              <Link href="/privacy/">privacy policy</Link> spells this out.
+              A cloned app can only use the camera or your contacts if Multiverse
+              holds that permission — so Multiverse asks on the clone&apos;s
+              behalf, and never uses them itself. The microphone is not requested
+              at all. The <Link href="/privacy/">privacy policy</Link> spells this
+              out.
             </Note>
           </div>
         </div>

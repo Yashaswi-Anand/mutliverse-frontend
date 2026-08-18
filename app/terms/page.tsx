@@ -12,8 +12,6 @@ export default function Terms() {
       <div className="wrap">
         <h1>Terms of Use</h1>
         <p className="doc-meta">
-          Last updated: 10 August 2026
-          <br />
           Applies to the Android app <strong>Multiverse</strong>
         </p>
 
@@ -82,6 +80,14 @@ export default function Terms() {
           promise otherwise:
         </p>
         <ul>
+          <li>
+            <strong>Some apps ask not to be cloned, and Multiverse obeys.</strong>{' '}
+            An app can declare that it will not run inside a container. When one
+            does, it is left out of the list of apps you can clone, and any
+            existing clone of it will not open. This is deliberate and there is
+            no way to override it — the app&apos;s own wishes about where it runs
+            are not ours to overrule.
+          </li>
           <li>Some apps refuse to run without Google Play services.</li>
           <li>
             &quot;Sign in with Google&quot; generally does not work inside a
@@ -89,6 +95,10 @@ export default function Terms() {
           </li>
           <li>
             Some apps detect the sandbox and stop, or behave unexpectedly in it.
+          </li>
+          <li>
+            Voice recording does not work inside a clone, so the microphone
+            permission is not requested at all.
           </li>
           <li>
             An update to an app, or to Android itself, can break cloning for that
@@ -126,9 +136,11 @@ export default function Terms() {
         <h2 data-reveal>8. Changes</h2>
 
         <p>
-          These terms may be updated. The date at the top of this page changes
-          when they do, and continuing to use the app means you accept the
-          updated terms.
+          These terms may be updated. This page is kept in step with the app, so
+          it always describes the version currently on Google Play, and
+          continuing to use the app means you accept the terms as they read here.
+          Material changes are noted in the app&apos;s release notes on Google
+          Play.
         </p>
 
         <h2 data-reveal>9. Contact</h2>
