@@ -12,7 +12,7 @@ export default function Terms() {
       <div className="wrap">
         <h1>Terms of Use</h1>
         <p className="doc-meta">
-          Applies to the Android app <strong>Multiverse</strong>
+          {/* Applies to the Android app <strong>Multiverse</strong> */}
         </p>
 
         <p>

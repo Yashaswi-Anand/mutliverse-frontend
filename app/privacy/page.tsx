@@ -13,7 +13,7 @@ export default function Privacy() {
       <div className="wrap">
         <h1>Privacy Policy</h1>
         <p className="doc-meta">
-          Applies to the Android app <strong>Multiverse</strong>
+          {/* Applies to the Android app <strong>Multiverse</strong> */}
         </p>
 
         <p>
